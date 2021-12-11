@@ -177,6 +177,14 @@ function App() {
         getData();
         //eslint-disable-next-line
     }, []);
+    const MINUTE_MS = 10000;
+    useEffect(() => {
+        setInterval(() => {
+            console.log('Logs every minute');
+            getData();
+        }, MINUTE_MS);
+        //eslint-disable-next-line
+    }, []);
 
     return (
         <CustomTable
