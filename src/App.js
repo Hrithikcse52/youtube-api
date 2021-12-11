@@ -13,7 +13,8 @@ import {
     Tooltip,
 } from '@chakra-ui/react';
 import { ChevronRightIcon, ChevronLeftIcon } from '@chakra-ui/icons';
-const api_key = 'AIzaSyBu1GioihCwqN5cTzhh5d3eQZdd1EVqlhY';
+const api_key1 = 'AIzaSyBu1GioihCwqN5cTzhh5d3eQZdd1EVqlhY';
+const api_key = 'AIzaSyAF3LpvtShumxNUW_xDMONrh2Yz0tcZJvk';
 const apiUrl = 'https://www.googleapis.com/youtube/v3';
 function CustomTable({ columns, data, prevToken, nextToken, getData }) {
     const {
@@ -58,7 +59,7 @@ function CustomTable({ columns, data, prevToken, nextToken, getData }) {
                                     // console.log(cell.column.Header);
                                     if (cell.column.Header === 'Thumbnail') {
                                         return (
-                                            <Td>
+                                            <Td {...cell.getCellProps()}>
                                                 <img
                                                     src={cell.value}
                                                     alt={cell.value}
@@ -170,7 +171,31 @@ function App() {
             dataFinal.push(dataArray);
             setPageData(dataArray);
         } catch (error) {
-            console.error(error);
+            console.log('Trying another Key');
+            try {
+                let url = `${apiUrl}/search?key=${api_key1}&type=video&maxResults=10&order=date&part=snippet&q=cricket`;
+                if (prev && prev.length > 1) {
+                    url = `${apiUrl}/search?key=${api_key1}&type=video&maxResults=10&pageToken=${prev}&order=date&part=snippet&q=cricket`;
+                }
+                const { data } = await axios.get(url);
+                console.log(data);
+                setNextToken(data.nextPageToken);
+                if (data.prevPageToken) {
+                    setPrevToken(data.prevPageToken);
+                }
+                let dataArray = data.items.map(({ snippet }) => ({
+                    title: snippet.title,
+                    desc: snippet.description,
+                    publishingTime: snippet.publishTime,
+                    thumbnail: snippet.thumbnails.default.url,
+                }));
+                console.log('adara', dataArray);
+                let dataFinal = pageData;
+                dataFinal.push(dataArray);
+                setPageData(dataArray);
+            } catch (error) {
+                console.error(error);
+            }
         }
     };
     useEffect(() => {
